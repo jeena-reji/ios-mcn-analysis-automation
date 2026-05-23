@@ -15,7 +15,6 @@ SCRIPT_PATH = BASE_DIR / "scripts" / "get_changes_diff.py"
 REPO_DIR.mkdir(exist_ok=True)
 
 # Handle repo list
-
 if REPOS.strip().lower() == "all":
 
     headers = {
@@ -33,20 +32,31 @@ if REPOS.strip().lower() == "all":
 
     repos_data = response.json()
 
-    repo_list = [repo["name"] for repo in repos_data]
+    repo_list = [
+        repo["name"]
+        for repo in repos_data
+    ]
 
 else:
+
     repo_list = [
         repo.strip()
         for repo in REPOS.split(",")
         if repo.strip()
     ]
 
-repo_list = [repo.strip() for repo in REPOS.split(",") if repo.strip()]
+print(f"Repositories to analyze: {repo_list}")
 
 for repo in repo_list:
 
     repo_path = REPO_DIR / repo
+
+    # Remove old repo if exists
+    if repo_path.exists():
+        subprocess.run(
+            ["rm", "-rf", str(repo_path)],
+            check=True
+        )
 
     print(f"Cloning {repo}...")
 
@@ -64,7 +74,7 @@ for repo in repo_list:
 
     print(f"{repo} cloned successfully")
 
-    # Get default branch
+    # Get current branch
     result = subprocess.run(
         [
             "git",
@@ -98,7 +108,7 @@ for repo in repo_list:
 
     print(f"Latest commit for {repo}: {latest_commit}")
 
-    # Output file
+    # Create reports directory
     reports_dir = BASE_DIR / "reports"
     reports_dir.mkdir(exist_ok=True)
 
@@ -120,3 +130,5 @@ for repo in repo_list:
     )
 
     print(f"Report generated: {output_file}")
+
+print("All repository analysis completed successfully")
