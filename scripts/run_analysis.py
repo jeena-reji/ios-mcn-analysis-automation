@@ -2,56 +2,95 @@ import os
 import subprocess
 from pathlib import Path
 
-ORG = os.environ.get("ORG")
-REPOS = os.environ.get("REPOS")
+# Inputs from GitHub Actions
+ORG = os.environ["ORG"]
+REPOS = os.environ["REPOS"]
+TOKEN = os.environ["ORG_PAT"]
 
-workspace = Path.cwd()
-reports_dir = workspace / "reports"
-repos_dir = workspace / "repositories"
+BASE_DIR = Path.cwd()
+REPO_DIR = BASE_DIR / "repositories"
 
-reports_dir.mkdir(exist_ok=True)
-repos_dir.mkdir(exist_ok=True)
+REPO_DIR.mkdir(exist_ok=True)
 
-# If user enters "all"
-if REPOS.lower() == "all":
-    repos = [
-        "amf",
-        "smf",
-        "upf",
-        "nrf"
-    ]
-else:
-    repos = [repo.strip() for repo in REPOS.split(",")]
+# Handle repo list
+if REPOS.strip().lower() == "all":
+    raise Exception(
+        "Add GitHub API logic here for fetching all repos dynamically"
+    )
 
-for repo in repos:
+repo_list = [repo.strip() for repo in REPOS.split(",") if repo.strip()]
 
-    repo_path = repos_dir / repo
+for repo in repo_list:
 
-    print(f"\nCloning {repo}...")
+    repo_path = REPO_DIR / repo
+
+    print(f"Cloning {repo}...")
+
+    clone_url = f"https://{TOKEN}@github.com/{ORG}/{repo}.git"
 
     subprocess.run(
         [
             "git",
             "clone",
-            f"https://github.com/{ORG}/{repo}.git",
+            clone_url,
             str(repo_path)
         ],
         check=True
     )
 
-    print(f"Running analysis for {repo}...")
+    print(f"{repo} cloned successfully")
+
+    # Get default branch
+    result = subprocess.run(
+        [
+            "git",
+            "rev-parse",
+            "--abbrev-ref",
+            "HEAD"
+        ],
+        cwd=repo_path,
+        text=True,
+        capture_output=True,
+        check=True
+    )
+
+    default_branch = result.stdout.strip()
+
+    print(f"Default branch for {repo}: {default_branch}")
+
+    # Get latest commit
+    result = subprocess.run(
+        [
+            "git",
+            "rev-parse",
+            "HEAD"
+        ],
+        cwd=repo_path,
+        text=True,
+        capture_output=True,
+        check=True
+    )
+
+    latest_commit = result.stdout.strip()
+
+    print(f"Latest commit for {repo}: {latest_commit}")
+
+    # Run analysis script
+    output_file = BASE_DIR / "reports" / f"{repo}-analysis.csv"
+
+    output_file.parent.mkdir(exist_ok=True)
 
     subprocess.run(
         [
             "python",
-            str(workspace / "scripts" / "get_changes_diff.py"),
+            "scripts/get_changes_diff.py",
             "--target-commit",
             "HEAD~1",
             "--output",
-            str(reports_dir / f"{repo}-analysis.csv")
+            str(output_file)
         ],
         cwd=repo_path,
         check=True
     )
 
-print("\nAll reports generated successfully.")
+    print(f"Report generated: {output_file}")
