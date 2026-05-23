@@ -598,19 +598,23 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     repo_root = Path.cwd()
-    submodules = args.submodules or discover_submodules(repo_root)
+    try:
+        submodules = args.submodules or discover_submodules(repo_root)
+    except Exception:
+        submodules = []
     base_commits = parse_module_commits(args.base, "--base")
     target_commits = parse_module_commits(args.target, "--target")
     base_commits.update(target_commits)
     default_target_commit = args.target_commit or args.base_commit
     extensions = tuple(args.extensions or ())
 
-    if not default_target_commit and not base_commits:
-        print(
-            "error: provide --target-commit or at least one --target SUBMODULE=COMMIT",
-            file=sys.stderr,
-        )
-        return 2
+    # Allow repositories without submodules
+    if submodules and not default_target_commit and not base_commits:
+       print(
+          "error: provide --target-commit or at least one --target SUBMODULE=COMMIT",
+          file=sys.stderr,
+       )
+       return 2
 
     root_summary: RootSummary | None = None
     summaries: list[SubmoduleSummary] = []
