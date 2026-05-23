@@ -1,3 +1,4 @@
+import requests
 import os
 import subprocess
 from pathlib import Path
@@ -14,10 +15,32 @@ SCRIPT_PATH = BASE_DIR / "scripts" / "get_changes_diff.py"
 REPO_DIR.mkdir(exist_ok=True)
 
 # Handle repo list
+
 if REPOS.strip().lower() == "all":
-    raise Exception(
-        "Add GitHub API logic here for fetching all repos dynamically"
-    )
+
+    headers = {
+        "Authorization": f"token {TOKEN}"
+    }
+
+    url = f"https://api.github.com/orgs/{ORG}/repos?per_page=100"
+
+    response = requests.get(url, headers=headers)
+
+    if response.status_code != 200:
+        raise Exception(
+            f"Failed to fetch repositories: {response.text}"
+        )
+
+    repos_data = response.json()
+
+    repo_list = [repo["name"] for repo in repos_data]
+
+else:
+    repo_list = [
+        repo.strip()
+        for repo in REPOS.split(",")
+        if repo.strip()
+    ]
 
 repo_list = [repo.strip() for repo in REPOS.split(",") if repo.strip()]
 
