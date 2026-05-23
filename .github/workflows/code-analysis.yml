@@ -36,7 +36,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install pandas openpyxl xlsxwriter
+          pip install pandas openpyxl xlsxwriter requests
 
       - name: Run Analysis
         env:
