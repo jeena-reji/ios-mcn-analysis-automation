@@ -9,6 +9,7 @@ TOKEN = os.environ["ORG_PAT"]
 
 BASE_DIR = Path.cwd()
 REPO_DIR = BASE_DIR / "repositories"
+SCRIPT_PATH = BASE_DIR / "scripts" / "get_changes_diff.py"
 
 REPO_DIR.mkdir(exist_ok=True)
 
@@ -44,9 +45,8 @@ for repo in repo_list:
     result = subprocess.run(
         [
             "git",
-            "rev-parse",
-            "--abbrev-ref",
-            "HEAD"
+            "branch",
+            "--show-current"
         ],
         cwd=repo_path,
         text=True,
@@ -75,19 +75,22 @@ for repo in repo_list:
 
     print(f"Latest commit for {repo}: {latest_commit}")
 
+    # Output file
+    reports_dir = BASE_DIR / "reports"
+    reports_dir.mkdir(exist_ok=True)
+
+    output_file = reports_dir / f"{repo}-analysis.csv"
+
     # Run analysis script
-    output_file = BASE_DIR / "reports" / f"{repo}-analysis.csv"
-
-    output_file.parent.mkdir(exist_ok=True)
-
     subprocess.run(
         [
             "python",
-            "scripts/get_changes_diff.py",
+            str(SCRIPT_PATH),
             "--target-commit",
             "HEAD~1",
             "--output",
-            str(output_file)
+            str(output_file),
+            "--no-reference-xlsx"
         ],
         cwd=repo_path,
         check=True
