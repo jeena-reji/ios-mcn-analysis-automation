@@ -597,7 +597,7 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    repo_root = Path(__file__).resolve().parents[1]
+    repo_root = Path.cwd()
     submodules = args.submodules or discover_submodules(repo_root)
     base_commits = parse_module_commits(args.base, "--base")
     target_commits = parse_module_commits(args.target, "--target")
