@@ -50,7 +50,7 @@ jobs:
           ORG_PAT: ${{ secrets.ORG_PAT }}
           ORG: ${{ github.event.inputs.organization }}
           REPOS: ${{ github.event.inputs.repositories }}
-          TARGET_COMMIT: ${{ github.event.inputs.target_commit }}  ← ADD THIS
+          TARGET_COMMIT: ${{ github.event.inputs.target_commit }}  ## Added this line
         run: |
           python scripts/run_analysis.py
 
