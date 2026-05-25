@@ -120,7 +120,7 @@ for repo in repo_list:
             "python",
             str(SCRIPT_PATH),
             "--target-commit",
-            os.environ.get("TARGET_COMMIT", "HEAD~1"),  ← this line changed
+            os.environ.get("TARGET_COMMIT", "HEAD~1"), 
             "--output",
             # "HEAD~1",
             str(output_file),
