@@ -422,14 +422,24 @@ def to_workbook_row(
     row_type = reference.row_type if reference and reference.row_type else row.row_type
     if reference is None and is_file and image_like_path(row.path):
         row_type = "Image"
-    total_relevant_lines = row.total_lines if is_file else 0
-    if not relevance:
-        total_relevant_lines = 0
-    improvement_lines = row.additions + row.deletions if is_file else 0
+    # total_relevant_lines = row.total_lines if is_file else 0
+    # if not relevance:
+    #     total_relevant_lines = 0
+    # improvement_lines = row.additions + row.deletions if is_file else 0
+    # impacted_lines = row.total_lines if is_file and (row.additions or row.deletions) else 0
+    # if not relevance:
+    #     improvement_lines = 0
+    #     impacted_lines = 0
+    # Total relevant lines = (additions + deletions) * relevance
+    total_relevant_lines = (row.additions + row.deletions) * relevance if is_file else 0
+
+    # Improvement lines = Total relevant lines
+    improvement_lines = total_relevant_lines
+
+    # Impacted lines = total lines where any additions or deletions exist
     impacted_lines = row.total_lines if is_file and (row.additions or row.deletions) else 0
     if not relevance:
-        improvement_lines = 0
-        impacted_lines = 0
+     impacted_lines = 0
     return {
         "Tree": tree_label,
         "File/Folder": row_type,
