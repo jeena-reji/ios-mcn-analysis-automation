@@ -7,6 +7,7 @@ from pathlib import Path
 ORG = os.environ["ORG"]
 REPOS = os.environ["REPOS"]
 TOKEN = os.environ["ORG_PAT"]
+TARGET_COMMIT = os.environ.get("TARGET_COMMIT", "HEAD~1")
 
 BASE_DIR = Path.cwd()
 REPO_DIR = BASE_DIR / "repositories"
@@ -108,6 +109,16 @@ for repo in repo_list:
 
     print(f"Latest commit for {repo}: {latest_commit}")
 
+    check_commit = subprocess.run(
+        ["git", "rev-parse", "--verify", TARGET_COMMIT],
+        cwd=repo_path,
+        text=True,
+        capture_output=True
+    )
+    if check_commit.returncode != 0:
+        print(f"Skipping {repo} - target commit '{TARGET_COMMIT}' not found")
+        continue
+
     # Create reports directory
     reports_dir = BASE_DIR / "reports"
     reports_dir.mkdir(exist_ok=True)
@@ -120,7 +131,7 @@ for repo in repo_list:
             "python",
             str(SCRIPT_PATH),
             "--target-commit",
-            os.environ.get("TARGET_COMMIT", "HEAD~1"), 
+            TARGET_COMMIT,  
             "--output",
             # "HEAD~1",
             str(output_file),
