@@ -120,8 +120,9 @@ for repo in repo_list:
             "python",
             str(SCRIPT_PATH),
             "--target-commit",
-            "HEAD~1",
+            os.environ.get("TARGET_COMMIT", "HEAD~1"),  ← this line changed
             "--output",
+            # "HEAD~1",
             str(output_file),
             "--no-reference-xlsx"
         ],
