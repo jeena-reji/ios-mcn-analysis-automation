@@ -1,6 +1,7 @@
 import requests
 import os
 import subprocess
+import shutil
 from pathlib import Path
 
 # Inputs from GitHub Actions
@@ -127,7 +128,7 @@ for repo in repo_list:
     output_file = reports_dir / f"{repo}-analysis.csv"
 
     # Copy script into cloned repo so path resolves correctly
-    import shutil
+  
     scripts_dir = repo_path / "scripts"
     scripts_dir.mkdir(exist_ok=True)
     script_copy = scripts_dir / "get_changes_diff.py"
@@ -137,7 +138,8 @@ for repo in repo_list:
     subprocess.run(
         [
             "python",
-            str(SCRIPT_PATH),
+            # str(SCRIPT_PATH),
+            str(script_copy),
             "--target-commit",
             TARGET_COMMIT,  
             "--output",
