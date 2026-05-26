@@ -67,6 +67,7 @@ for repo in repo_list:
         [
             "git",
             "clone",
+            "--recurse-submodules",
             clone_url,
             str(repo_path)
         ],
@@ -124,6 +125,13 @@ for repo in repo_list:
     reports_dir.mkdir(exist_ok=True)
 
     output_file = reports_dir / f"{repo}-analysis.csv"
+
+    # Copy script into cloned repo so path resolves correctly
+    import shutil
+    scripts_dir = repo_path / "scripts"
+    scripts_dir.mkdir(exist_ok=True)
+    script_copy = scripts_dir / "get_changes_diff.py"
+    shutil.copy(SCRIPT_PATH, script_copy)
 
     # Run analysis script
     subprocess.run(
