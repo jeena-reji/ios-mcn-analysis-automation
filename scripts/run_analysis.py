@@ -48,6 +48,12 @@ else:
     ]
 
 print(f"Repositories to analyze: {repo_list}")
+subprocess.run(
+    ["git", "config", "--global",
+     f"url.https://{TOKEN}@github.com/.insteadOf",
+     "https://github.com/"],
+    check=True
+)
 
 for repo in repo_list:
 
