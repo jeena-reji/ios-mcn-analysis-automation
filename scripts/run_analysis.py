@@ -15,6 +15,16 @@ REPO_DIR = BASE_DIR / "repositories"
 SCRIPT_PATH = BASE_DIR / "scripts" / "get_changes_diff.py"
 
 REPO_DIR.mkdir(exist_ok=True)
+ORG_SUBMODULE_TARGETS = {
+    "ios-mcn-ran": [
+        "--target", "o1-adapter=0df0437",
+        "--target", "openairinterface5g=f0fce7c167",
+        "--target", "phy=2de97529a4c5a1922214ba0e6f0fb84cacbd0bc7",
+    ],
+    "ios-mcn-core": [],
+    "ios-mcn-smo": [],
+    "ios-mcn-ims": [],
+}
 
 # Handle repo list
 if REPOS.strip().lower() == "all":
@@ -141,22 +151,33 @@ for repo in repo_list:
     shutil.copy(SCRIPT_PATH, script_copy)
 
     # Run analysis script
-    subprocess.run(
-        [
-            "python",
-            # str(SCRIPT_PATH),
-            str(script_copy),
-            "--target-commit",
-            TARGET_COMMIT,  
-            "--output",
-            # "HEAD~1",
-            str(output_file),
-            "--no-reference-xlsx"
-        ],
-        cwd=repo_path,
-        check=True
-    )
+    # subprocess.run(
+    #     [
+    #         "python",
+    #         # str(SCRIPT_PATH),
+    #         str(script_copy),
+    #         "--target-commit",
+    #         TARGET_COMMIT,  
+    #         "--output",
+    #         # "HEAD~1",
+    #         str(output_file),
+    #         "--no-reference-xlsx"
+    #     ],
+    #     cwd=repo_path,
+    #     check=True
+    # )
+    # Run analysis script
+cmd = ["python", str(script_copy),
+       "--no-reference-xlsx",
+       "--output", str(output_file)]
 
+submodule_args = ORG_SUBMODULE_TARGETS.get(ORG, [])
+if submodule_args:
+    cmd.extend(submodule_args)
+elif TARGET_COMMIT:
+    cmd.extend(["--target-commit", TARGET_COMMIT])
+
+subprocess.run(cmd, cwd=repo_path, check=True)
     print(f"Report generated: {output_file}")
 
 print("All repository analysis completed successfully")
