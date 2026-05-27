@@ -150,7 +150,7 @@ for repo in repo_list:
     script_copy = scripts_dir / "get_changes_diff.py"
     shutil.copy(SCRIPT_PATH, script_copy)
 
-    Run analysis script
+    # Run analysis script
     subprocess.run(
         [
             "python",
