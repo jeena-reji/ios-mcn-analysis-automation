@@ -112,7 +112,11 @@ for repo in repo_list:
     if OUTPUT_FORMAT in ("xlsx", "both"):
         xlsx_file = reports_dir / f"{repo}-analysis.xlsx"
         df = pd.read_csv(csv_file)
-        df.to_excel(xlsx_file, index=False)
+        # df.to_excel(xlsx_file, index=False)
+        sheet_name = f"{repo}-analysis"
+        # sheet name max 31 chars in Excel
+        sheet_name = sheet_name[:31]
+        df.to_excel(xlsx_file, index=False, sheet_name=sheet_name)
         print(f"Excel report generated: {xlsx_file}")
 
     # Remove csv if only xlsx needed
