@@ -17,7 +17,7 @@ REPO_DIR = BASE_DIR / "repositories"
 SCRIPT_PATH = BASE_DIR / "scripts" / "get_changes_diff.py"
 REPO_DIR.mkdir(exist_ok=True)
 
-REPO_SUBMODULE_TARGETS = {
+ORG_SUBMODULE_TARGETS = {
     "ios-mcn-ran": [
         "--target", "o1-adapter=0df0437",
         "--target", "openairinterface5g=f0fce7c167",
@@ -99,7 +99,7 @@ for repo in repo_list:
            "--no-reference-xlsx",
            "--output", str(csv_file)]
 
-    submodule_args = REPO_SUBMODULE_TARGETS.get(ORG, [])
+    submodule_args = ORG_SUBMODULE_TARGETS.get(ORG, [])
     if submodule_args:
         cmd.extend(submodule_args)
     elif TARGET_COMMIT:
