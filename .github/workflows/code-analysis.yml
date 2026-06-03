@@ -18,7 +18,7 @@ on:
       target_commit:
         description: "Old version to compare from (e.g. v0.3.0.iosmcn.core)"
         required: true
-        default: "v0.3.0.iosmcn.core"
+        default: "v1.0.0"
 
       output_format:
         description: "csv/xlsx/both"
