@@ -18,11 +18,12 @@ SCRIPT_PATH = BASE_DIR / "scripts" / "get_changes_diff.py"
 REPO_DIR.mkdir(exist_ok=True)
 
 ORG_SUBMODULE_TARGETS = {
-    "ios-mcn-ran": [
-        "--target", "o1-adapter=0df0437",
-        "--target", "openairinterface5g=f0fce7c167",
-        "--target", "phy=2de97529a4c5a1922214ba0e6f0fb84cacbd0bc7",
-    ],
+    # "ios-mcn-ran": [
+    #     "--target", "o1-adapter=0df0437",
+    #     "--target", "openairinterface5g=f0fce7c167",
+    #     "--target", "phy=2de97529a4c5a1922214ba0e6f0fb84cacbd0bc7",
+    # ],
+    "ios-mcn-ran": [],
     "ios-mcn-core": [],
     "ios-mcn-smo": [],
     "ios-mcn-ims": [],
